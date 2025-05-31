@@ -27,7 +27,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
-              src="/lovable-uploads/ed81d01d-3b7d-433f-8dad-285d379ff507.png" 
+              src="./optra.jpg" 
               alt="Optra Design" 
               className="h-8 w-auto"
             />
