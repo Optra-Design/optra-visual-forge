@@ -8,24 +8,68 @@ import { useEffect, useState } from 'react';
 
 const Index = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; emoji: string; delay: number }>>([]);
+  const [backgroundParticles, setBackgroundParticles] = useState<Array<{ 
+    id: number; 
+    x: number; 
+    y: number; 
+    baseX: number; 
+    baseY: number; 
+    emoji: string; 
+    speed: number;
+    scale: number;
+  }>>([]);
 
-  const emojis = ['🚀', '✨', '💫', '🎯', '🔥', '💎', '⚡', '🌟', '🎨', '📱'];
+  const emojis = ['🚀', '✨', '💫', '🎯', '🔥', '💎', '⚡', '🌟', '🎨', '📱', '🌈', '💜', '🧡', '💖'];
 
+  // Initialize background particles
+  useEffect(() => {
+    const particles = [];
+    for (let i = 0; i < 25; i++) {
+      particles.push({
+        id: i,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        baseX: Math.random() * window.innerWidth,
+        baseY: Math.random() * window.innerHeight,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        speed: 0.5 + Math.random() * 1,
+        scale: 0.8 + Math.random() * 0.4
+      });
+    }
+    setBackgroundParticles(particles);
+  }, []);
+
+  // Handle mouse movement and particle reactions
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
       
-      // Add new particle with delay
-      const newParticle = {
-        id: Date.now(),
-        x: e.clientX,
-        y: e.clientY,
-        emoji: emojis[Math.floor(Math.random() * emojis.length)],
-        delay: Math.random() * 0.5
-      };
-      
-      setParticles(prev => [...prev.slice(-15), newParticle]);
+      setBackgroundParticles(prev => prev.map(particle => {
+        const dx = e.clientX - particle.x;
+        const dy = e.clientY - particle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = 200;
+        
+        if (distance < maxDistance) {
+          const force = (maxDistance - distance) / maxDistance;
+          const angle = Math.atan2(dy, dx);
+          const repelForce = force * 30;
+          
+          return {
+            ...particle,
+            x: particle.x - Math.cos(angle) * repelForce * particle.speed,
+            y: particle.y - Math.sin(angle) * repelForce * particle.speed
+          };
+        } else {
+          // Slowly return to base position
+          const returnForce = 0.02;
+          return {
+            ...particle,
+            x: particle.x + (particle.baseX - particle.x) * returnForce,
+            y: particle.y + (particle.baseY - particle.y) * returnForce
+          };
+        }
+      }));
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -54,17 +98,19 @@ const Index = () => {
     <div className="min-h-screen relative overflow-hidden">
       <Navbar />
       
-      {/* Animated Emoji Particles */}
+      {/* Interactive Background Emoji Particles */}
       <div className="fixed inset-0 pointer-events-none z-10">
-        {particles.map((particle) => (
+        {backgroundParticles.map((particle) => (
           <div
             key={particle.id}
-            className="absolute text-2xl animate-ping"
+            className="absolute text-3xl opacity-60 hover:opacity-100 transition-all duration-300 animate-pulse"
             style={{
-              left: particle.x - 16,
-              top: particle.y - 16,
-              animationDelay: `${particle.delay}s`,
-              animationDuration: '2s'
+              left: particle.x - 24,
+              top: particle.y - 24,
+              transform: `scale(${particle.scale})`,
+              filter: 'drop-shadow(0 0 10px rgba(255, 107, 53, 0.3))',
+              animationDelay: `${particle.id * 0.1}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
             }}
           >
             {particle.emoji}
@@ -72,22 +118,27 @@ const Index = () => {
         ))}
       </div>
 
-      {/* Enhanced Background Effects */}
-      <div className="fixed inset-0 bg-gradient-to-br from-optra-orange/30 via-purple-500/20 to-optra-red/30 dark:from-optra-orange/15 dark:via-purple-500/10 dark:to-optra-red/15 animate-pulse"></div>
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,107,53,0.2),transparent_50%)]"></div>
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(230,57,70,0.2),transparent_50%)]"></div>
+      {/* Enhanced Background Effects with more vibrancy */}
+      <div className="fixed inset-0 bg-gradient-to-br from-optra-orange/40 via-purple-500/30 to-optra-red/40 dark:from-optra-orange/20 dark:via-purple-500/15 dark:to-optra-red/20 animate-pulse"></div>
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,107,53,0.3),transparent_50%)]"></div>
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(230,57,70,0.3),transparent_50%)]"></div>
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.2),transparent_70%)]"></div>
       
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 px-4 overflow-hidden min-h-screen flex items-center z-20">
         <div className="relative max-w-7xl mx-auto text-center w-full">
           <div className="animate-fade-in">
             <div className="mb-12 relative">
-              <div className="absolute inset-0 bg-optra-gradient opacity-30 blur-3xl rounded-full scale-150 animate-pulse"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-20 blur-2xl rounded-full scale-125 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute inset-0 bg-optra-gradient opacity-50 blur-3xl rounded-full scale-150 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-30 blur-2xl rounded-full scale-125 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-20 blur-xl rounded-full scale-110 animate-pulse" style={{ animationDelay: '1s' }}></div>
               <img 
                 src="/lovable-uploads/ed81d01d-3b7d-433f-8dad-285d379ff507.png" 
                 alt="Optra Design" 
-                className="h-40 md:h-48 w-auto mx-auto animate-scale-in relative z-10 drop-shadow-2xl hover:scale-110 transition-all duration-500"
+                className="h-40 md:h-48 w-auto mx-auto animate-scale-in relative z-10 drop-shadow-2xl hover:scale-110 transition-all duration-500 filter brightness-110"
+                style={{
+                  filter: 'drop-shadow(0 0 30px rgba(255, 107, 53, 0.6)) drop-shadow(0 0 60px rgba(147, 51, 234, 0.4))'
+                }}
               />
             </div>
             <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-tight">
