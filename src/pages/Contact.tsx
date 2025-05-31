@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Mail, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useState } from 'react';
 
-const Contact = () => {netlify,
+const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
