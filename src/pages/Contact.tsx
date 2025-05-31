@@ -1,11 +1,10 @@
-
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Mail, Phone, MapPin, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { Mail, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useState } from 'react';
 
 const Contact = () => {
@@ -34,20 +33,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "hello@optra.me",
+      value: "aniketh@optra.me",
       description: "Drop us a line anytime"
-    },
-    {
-      icon: Phone,
-      title: "Phone",
-      value: "+1 (555) 123-4567",
-      description: "Mon-Fri 9am-6pm EST"
-    },
-    {
-      icon: MapPin,
-      title: "Office",
-      value: "New York, NY",
-      description: "Remote-first team"
     }
   ];
 
@@ -131,7 +118,7 @@ const Contact = () => {
                     name="service"
                     value={formData.service}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus-ring"
                   >
                     <option value="">Select a service</option>
                     <option value="social-media-marketing">Social Media Marketing</option>
