@@ -9,11 +9,11 @@ import { useState } from 'react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    message: '',
-    service: ''
+    name: 'John Doe',
+    email: 'john@example.com',
+    company: 'example',
+    message: 'Type Your Message',
+    service: 'Select Service...'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -23,9 +23,10 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {netlify
     e.preventDefault();
     console.log('Form submitted:', formData);
+    netlify;
     // Handle form submission logic here
   };
 
