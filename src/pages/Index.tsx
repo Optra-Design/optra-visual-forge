@@ -133,7 +133,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-30 blur-2xl rounded-full scale-125 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-20 blur-xl rounded-full scale-110 animate-pulse" style={{ animationDelay: '1s' }}></div>
               <img 
-                src="/lovable-uploads/ed81d01d-3b7d-433f-8dad-285d379ff507.png" 
+                src="/optra.jpg" 
                 alt="Optra Design" 
                 className="h-40 md:h-48 w-auto mx-auto animate-scale-in relative z-10 drop-shadow-2xl hover:scale-110 transition-all duration-500 filter brightness-110"
                 style={{
@@ -234,7 +234,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-4 mb-8">
             <img 
-              src="/lovable-uploads/ed81d01d-3b7d-433f-8dad-285d379ff507.png" 
+              src="optra.jpg" 
               alt="Optra Design" 
               className="h-10 w-auto"
             />
