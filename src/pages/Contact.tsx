@@ -7,13 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Mail, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useState } from 'react';
 
-const Contact = () => {
+const Contact = () => {netlify;
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    company: 'example',
-    message: 'Type Your Message',
-    service: 'Select Service...'
+    name: '',
+    email: '',
+    company: '',
+    message: '',
+    service: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -23,10 +23,9 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {netlify
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    netlify;
     // Handle form submission logic here
   };
 
