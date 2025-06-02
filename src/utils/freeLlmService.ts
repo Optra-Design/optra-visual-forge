@@ -1,5 +1,5 @@
 
-import { pipeline, Pipeline } from '@huggingface/transformers';
+import { pipeline } from '@huggingface/transformers';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -14,7 +14,7 @@ interface LLMResponse {
 }
 
 class FreeLLMService {
-  private textGenerator: Pipeline | null = null;
+  private textGenerator: any = null;
   private isInitializing = false;
   private initialized = false;
 
@@ -83,7 +83,7 @@ Be helpful, concise, and professional. Keep responses under 100 words.`;
 
       const prompt = `${systemPrompt}\n\nUser: ${lastMessage.content}\nAssistant:`;
 
-      const result = await this.textGenerator!(prompt, {
+      const result = await this.textGenerator(prompt, {
         max_new_tokens: 150,
         temperature: 0.7,
         do_sample: true,
