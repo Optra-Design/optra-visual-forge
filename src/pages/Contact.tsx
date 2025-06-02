@@ -1,245 +1,126 @@
-import Navbar from '@/components/Navbar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Mail, Send, Instagram, Twitter, Linkedin } from 'lucide-react';
-import { useState } from 'react';
+
+import React from 'react';
+import Navigation from '../components/Navigation';
+import { Mail, Phone, MapPin, Clock, MessageCircle, Zap, Send } from 'lucide-react';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    message: '',
-    service: ''
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission logic here
-  };
-
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email",
-      value: "aniketh@optra.me",
-      description: "Drop us a line anytime"
-    }
-  ];
-
-  const socialLinks = [
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" }
-  ];
-
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <Navigation />
       
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Let's Build Something <span className="bg-optra-gradient bg-clip-text text-transparent">Beautiful</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ready to transform your brand's digital presence? Get in touch and let's create 
-            something extraordinary together.
-          </p>
-        </div>
-      </section>
+      <div className="pt-24 pb-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Hero */}
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-7xl font-bold text-gradient mb-6">
+              Let's Connect
+            </h1>
+            <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
+              💬 Ready to transform your vision into extraordinary design? 
+              Let's start the conversation and create something amazing together.
+            </p>
+          </div>
 
-      {/* Contact Form & Info */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16">
-          {/* Contact Form */}
-          <Card className="glass-card border-0">
-            <CardHeader>
-              <CardTitle className="text-2xl">Start Your Project</CardTitle>
-              <p className="text-muted-foreground">
-                Tell us about your vision and we'll get back to you within 24 hours.
+          <div className="grid lg:grid-cols-2 gap-12 mb-16">
+            {/* Contact CTA */}
+            <div className="glass p-8 rounded-3xl text-center">
+              <h2 className="text-3xl font-bold text-gradient mb-6">Ready to Start?</h2>
+              <p className="text-foreground/70 mb-8">
+                Drop us an email and let's discuss your project in detail. We'll get back to you within 48 hours.
               </p>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="floating-label"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="floating-label"
-                      required
-                    />
-                  </div>
-                </div>
+              <a
+                href="mailto:aniketh@optra.me?subject=Project Inquiry&body=Hi Aniketh,%0D%0A%0D%0AI'm interested in working with Optra Design. Here are my project details:%0D%0A%0D%0AProject Type:%0D%0ABudget Range:%0D%0ATimeline:%0D%0AProject Description:%0D%0A%0D%0ALooking forward to hearing from you!"
+                className="inline-flex items-center gap-3 bg-optra-gradient hover:scale-105 transition-transform px-8 py-4 rounded-2xl text-white font-semibold text-lg"
+              >
+                <Send className="w-6 h-6" />
+                Send Email
+              </a>
+            </div>
+
+            {/* Contact Info */}
+            <div className="space-y-8">
+              <div className="glass p-8 rounded-3xl">
+                <h2 className="text-2xl font-bold text-gradient mb-6">Get in Touch</h2>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company</Label>
-                  <Input
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    className="floating-label"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="service">Service Interested In</Label>
-                  <select
-                    id="service"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus-ring"
-                  >
-                    <option value="">Select a service</option>
-                    <option value="social-media-marketing">Social Media Marketing</option>
-                    <option value="brand-design">Brand Design</option>
-                    <option value="content-creation">Content Creation</option>
-                    <option value="strategy">Strategy Consulting</option>
-                    <option value="full-service">Full Service Package</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message *</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    rows={5}
-                    className="floating-label"
-                    placeholder="Tell us about your project, goals, and timeline..."
-                    required
-                  />
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-optra-gradient hover:bg-optra-gradient-hover text-white text-lg py-3"
-                >
-                  Send Message
-                  <Send className="ml-2 h-5 w-5" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                We're here to help bring your vision to life. Whether you're looking to elevate 
-                your social media presence or create a stunning brand identity, let's start the conversation.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              {contactInfo.map((info, index) => (
-                <Card key={index} className="glass-card border-0">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="p-3 bg-optra-gradient rounded-lg">
-                        <info.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg">{info.title}</h3>
-                        <p className="text-lg mb-1">{info.value}</p>
-                        <p className="text-muted-foreground text-sm">{info.description}</p>
-                      </div>
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-optra-gradient rounded-full flex items-center justify-center">
+                      <Mail className="w-6 h-6 text-white" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div>
+                      <p className="font-semibold">Email</p>
+                      <a href="mailto:aniketh@optra.me" className="text-foreground/70 hover:text-gradient transition-colors">
+                        aniketh@optra.me
+                      </a>
+                    </div>
+                  </div>
 
-            <div>
-              <h3 className="text-xl font-bold mb-4">Follow Us</h3>
-              <div className="flex space-x-4">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="p-3 bg-optra-gradient rounded-lg hover:scale-110 transition-all duration-300"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="h-6 w-6 text-white" />
-                  </a>
-                ))}
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                      <MapPin className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">Location</p>
+                      <p className="text-foreground/70">Bangalore, India</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">Response Time</p>
+                      <p className="text-foreground/70">Within 48 hours</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">Chat with OptraBot</p>
+                      <p className="text-foreground/70">Available 24/7 for instant help</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass p-8 rounded-3xl">
+                <h3 className="text-xl font-bold text-gradient mb-4">What to Expect</h3>
+                <ul className="space-y-3 text-foreground/80">
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <span>Personal response from Aniketh within 48 hours</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-blue-400" />
+                    <span>Initial consultation to understand your vision</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-green-400" />
+                    <span>Customized proposal based on your needs</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-purple-400" />
+                    <span>Transparent timeline and pricing discussion</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="glass p-6 rounded-3xl text-center">
+                <p className="text-foreground/70 mb-4">
+                  ⚡ Need immediate assistance?
+                </p>
+                <p className="text-sm text-foreground/60">
+                  Try our OptraBot in the bottom right corner for instant answers about services, pricing, and more!
+                </p>
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 px-4 bg-muted/30">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6">
-              Frequently Asked <span className="bg-optra-gradient bg-clip-text text-transparent">Questions</span>
-            </h2>
-          </div>
-          
-          <div className="space-y-6">
-            {[
-              {
-                question: "What's your typical project timeline?",
-                answer: "Project timelines vary based on scope, but most brand design projects take 4-6 weeks, while social media campaigns can be set up within 2-3 weeks."
-              },
-              {
-                question: "Do you work with businesses of all sizes?",
-                answer: "Yes! We work with startups, scale-ups, and established enterprises. Our strategies are tailored to your specific needs and budget."
-              },
-              {
-                question: "What platforms do you specialize in?",
-                answer: "We specialize in Instagram, TikTok, LinkedIn, Twitter, and Facebook, with expertise in emerging platforms as they gain traction."
-              },
-              {
-                question: "Do you provide ongoing support?",
-                answer: "Absolutely! We offer ongoing management, consulting, and optimization services to ensure your brand continues to grow."
-              }
-            ].map((faq, index) => (
-              <Card key={index} className="glass-card border-0">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold mb-3">{faq.question}</h3>
-                  <p className="text-muted-foreground">{faq.answer}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 };
