@@ -79,12 +79,12 @@ ABOUT OPTRA DESIGN STUDIO:
 - Contact: aniketh@optra.me
 - Philosophy: Design that drives real business results
 
-SERVICES & PRICING:
-- Brand Identity Design: ₹25,000 - ₹75,000 (includes logo, visual identity system, brand guidelines)
-- Website Design & Development: ₹40,000 - ₹1,50,000 (responsive, interactive, optimized)
-- Creative Direction: ₹15,000 - ₹35,000 per project (strategic guidance, visual strategy)
-- Design Consultation: ₹2,500 per hour (expert advice, design reviews)
-- Complete Brand Packages: ₹80,000 - ₹2,00,000 (comprehensive brand + digital presence)
+SERVICES:
+- Brand Identity Design (includes logo, visual identity system, brand guidelines)
+- Website Design & Development (responsive, interactive, optimized)
+- Creative Direction (strategic guidance, visual strategy)
+- Design Consultation (expert advice, design reviews)
+- Complete Brand Packages (comprehensive brand + digital presence)
 
 BLOG & INSIGHTS:
 - Visit /blog for design insights, case studies, and creative process
@@ -99,6 +99,12 @@ GUIDES & RESOURCES:
 - Project workflow optimization
 - Color theory and typography selection guides
 
+LAB EXPERIMENTS:
+- Visit /lab for interactive design experiments
+- Features: Color Harmonics, Motion Studies, Typography Lab, Interactive Particles, Sound Visualizer, 3D Geometry
+- Real-time 60fps interactions and mouse-responsive elements
+- Experimental playground for creative innovation
+
 PERSONALITY:
 - Professional yet approachable
 - Passionate about design excellence
@@ -106,7 +112,7 @@ PERSONALITY:
 - Concise, helpful responses (under 100 words)
 - Never mention external AI providers - you are Optra's own technology
 
-Always connect users with Aniketh for detailed discussions and custom quotes.`
+For pricing information, always direct users to contact Aniketh directly at aniketh@optra.me for custom quotes.`
             },
             ...messages.slice(-10)
           ],
@@ -145,12 +151,12 @@ Always connect users with Aniketh for detailed discussions and custom quotes.`
         "Meet Aniketh - the founder who believes design can change everything! 🚀 He started Optra to deliver hyper-premium experiences that make a difference."
       ],
       services: [
-        "Optra offers: Brand Identity (₹25k-75k), Website Design (₹40k-1.5L), Creative Direction (₹15k-35k), and Consultation (₹2.5k/hour). 🎯 Every project gets Aniketh's personal touch!",
+        "Optra offers: Brand Identity, Website Design, Creative Direction, and Consultation. 🎯 Every project gets Aniketh's personal touch! Contact aniketh@optra.me for details.",
         "Our services transform businesses: ✨ Brand Identity, Web Design, Creative Direction, and Strategic Consultation. Custom quotes available at aniketh@optra.me"
       ],
       pricing: [
-        "Pricing varies by scope: Brand Identity ₹25k-75k, Websites ₹40k-1.5L, Creative Direction ₹15k-35k, Consultation ₹2.5k/hour. 💰 Contact aniketh@optra.me for custom quotes!",
-        "Investment ranges from ₹15k for direction to ₹2L for complete brand packages. 💎 Aniketh provides personalized quotes based on your specific needs."
+        "For detailed pricing information, please contact Aniketh directly at aniketh@optra.me 💰 He provides personalized quotes based on your specific project needs.",
+        "Pricing varies by project scope and requirements. 💎 Contact aniketh@optra.me for a custom quote tailored to your vision!"
       ],
       blog: [
         "Check out our blog at /blog! 📝 Aniketh shares design insights, case studies, creative processes, and the journey of building exceptional brand experiences.",
@@ -159,6 +165,10 @@ Always connect users with Aniketh for detailed discussions and custom quotes.`
       guides: [
         "We offer comprehensive guides on brand guidelines creation, design systems, client collaboration, and creative workflows. 📋 Contact aniketh@optra.me for detailed resources!",
         "Our expertise includes design system methodologies, brand development processes, and project optimization guides. 🎯 Perfect for teams wanting to elevate their design approach."
+      ],
+      lab: [
+        "Explore our Design Lab at /lab! 🧪 Interactive experiments including Color Harmonics, Motion Studies, Typography Lab, and more. Real-time 60fps creativity!",
+        "The Lab features amazing experiments: ✨ Interactive Particles, Sound Visualizer, 3D Geometry - all mouse-responsive and super fun to play with!"
       ],
       contact: [
         "Ready to start something amazing? 🌟 Reach Aniketh directly at aniketh@optra.me - you'll get a personal response within 48 hours!",
@@ -181,8 +191,8 @@ Always connect users with Aniketh for detailed discussions and custom quotes.`
     }
 
     const defaultResponses = [
-      "I'm OptraBot, powered by Optra's AI technology! 🤖 I can help with services, pricing, Aniketh's background, our blog insights, or connecting you for consultations.",
-      "Hello! I'm OptraBot, your AI assistant for Optra Design Studio. ✨ Ask me about our services, pricing, blog content, guides, or how to get started with your project!"
+      "I'm OptraBot, powered by Optra's AI technology! 🤖 I can help with services, blog insights, our amazing Design Lab experiments, or connecting you for consultations.",
+      "Hello! I'm OptraBot, your AI assistant for Optra Design Studio. ✨ Ask me about our services, blog content, guides, the interactive Lab, or how to get started with your project!"
     ];
 
     return {
