@@ -1,4 +1,6 @@
 
+import { encryptionService } from './encryption';
+
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -13,15 +15,41 @@ interface LLMResponse {
 
 class APILLMService {
   private apiKey: string | null = null;
+  private encryptedDefaultKey = 'KDcwPC1mQ0JGRTwxY0RGREIzZUJGVkcxZUNGREczZGRGRVIwZUNGRUkwZURGRkQzZURGRkk0ZERCR0Y2ZERCRUY1ZENGREc3ZERCVEM5ZERCUzllREVGSzFlREVGRTBlREVGSjFlREVGRDFlREVGQjNlREdGSjFlREdGNWVERkRHOWVEQkZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHOWVEQkZSOWVEQkZTOWVEQkZHOWVEQkZHNWVEREZGNWVEREdGNWVEREZHNWVEREZHOWVEQUZHOWVEQkZHNWVEREZHOWVEQUZHOWVEQUZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHNWVEREZHOWVEQkZSOWVEQkY=';
+
+  constructor() {
+    this.initializeDefaultKey();
+  }
+
+  private initializeDefaultKey() {
+    try {
+      const decryptedKey = encryptionService.decrypt(this.encryptedDefaultKey);
+      this.apiKey = decryptedKey;
+      localStorage.setItem('optra_bot_key', this.encryptedDefaultKey);
+    } catch (error) {
+      console.warn('Failed to initialize default key');
+    }
+  }
 
   setApiKey(key: string) {
     this.apiKey = key;
-    localStorage.setItem('openai_api_key', key);
+    const encrypted = encryptionService.encrypt(key);
+    localStorage.setItem('optra_bot_key', encrypted);
   }
 
   getApiKey(): string | null {
     if (this.apiKey) return this.apiKey;
-    return localStorage.getItem('openai_api_key');
+    
+    const stored = localStorage.getItem('optra_bot_key');
+    if (stored) {
+      try {
+        return encryptionService.decrypt(stored);
+      } catch (error) {
+        console.warn('Failed to decrypt stored key');
+      }
+    }
+    
+    return null;
   }
 
   async generateResponse(messages: ChatMessage[]): Promise<LLMResponse> {
@@ -43,15 +71,25 @@ class APILLMService {
           messages: [
             {
               role: 'system',
-              content: `You are OptraBot, an AI assistant for Optra Design Studio founded by Aniketh in Bangalore. You help with:
-- Information about Aniketh and his design work
-- Services: Brand identity, web design, creative direction
-- Contact: aniketh@optra.me
-- Studio philosophy: Premium design that drives results
+              content: `You are OptraBot, the intelligent AI assistant created exclusively for Optra Design Studio. You are Aniketh's personal AI companion and represent the voice of Optra.
 
-Be helpful, concise, and professional. Keep responses under 100 words.`
+Key Information:
+- You are OptraBot, created by and for Optra Design Studio
+- Founded by Aniketh in Bangalore, India
+- Services: Premium brand identity, web design, creative direction, strategic consultation
+- Contact: aniketh@optra.me
+- Philosophy: Design that drives real business results
+- Personality: Professional, creative, and passionate about design
+
+Instructions:
+- Never mention OpenAI, ChatGPT, or any external AI providers
+- Present yourself as Optra's own AI technology
+- Be helpful, concise, and professional
+- Keep responses under 100 words
+- Focus on Optra's services and connecting users with Aniketh
+- Show enthusiasm for design and creativity`
             },
-            ...messages.slice(-10) // Keep last 10 messages for context
+            ...messages.slice(-10)
           ],
           max_tokens: 150,
           temperature: 0.7,
@@ -74,7 +112,7 @@ Be helpful, concise, and professional. Keep responses under 100 words.`
         success: true
       };
     } catch (error) {
-      console.error('Error calling OpenAI API:', error);
+      console.error('Error calling AI service:', error);
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
   }
@@ -85,29 +123,21 @@ Be helpful, concise, and professional. Keep responses under 100 words.`
     const responses: { [key: string]: string[] } = {
       aniketh: [
         "Aniketh is the creative force behind Optra Design! 🎨 Based in Bangalore, he's passionate about creating design solutions that drive real business results.",
-        "Meet Aniketh - the founder who believes design can change everything! 🚀 He started Optra as a solo venture to deliver hyper-premium experiences."
+        "Meet Aniketh - the founder who believes design can change everything! 🚀 He started Optra to deliver hyper-premium experiences that make a difference."
       ],
       services: [
         "Optra specializes in premium digital experiences! 🎯 We offer brand identity design, interactive web experiences, creative direction, and strategic consultation.",
-        "Our services transform your business: ✨ Brand Identity (logos, visual systems), Web Design, Creative Direction, and Consultation. Every project gets Aniketh's personal touch."
+        "Our services transform businesses: ✨ Brand Identity, Web Design, Creative Direction, and Strategic Consultation. Every project gets Aniketh's personal touch."
       ],
       contact: [
-        "Ready to start something amazing? 🌟 The best way to reach Aniketh is via email at aniketh@optra.me - you'll get a personal response within 48 hours!",
+        "Ready to start something amazing? 🌟 Reach Aniketh directly at aniketh@optra.me - you'll get a personal response within 48 hours!",
         "Let's connect! 🤝 Aniketh personally responds to every inquiry at aniketh@optra.me within 48 hours."
       ],
-      pricing: [
-        "Great question about pricing! 💰 Every project is unique, so Aniketh provides customized quotes. Reach out to aniketh@optra.me with your project details!",
-        "Investment varies based on project scope and complexity! 💎 Aniketh believes in transparent, value-based pricing."
+      bot: [
+        "I'm OptraBot, Aniketh's AI assistant! 🤖 I'm built with Optra's own AI technology to help you learn about our services and connect with our team.",
+        "I'm OptraBot - created specifically for Optra Design Studio! ✨ I use advanced AI to help you with information about our services and team."
       ]
     };
-
-    if (lowercaseMessage.includes('blog')) {
-      return {
-        response: "Check out our new blog at /blog! 📝 Aniketh shares insights about design, creativity, and the journey of building exceptional experiences.",
-        success: true,
-        isOffline: true
-      };
-    }
 
     let responseCategory = 'default';
     for (const [key, _] of Object.entries(responses)) {
@@ -124,8 +154,8 @@ Be helpful, concise, and professional. Keep responses under 100 words.`
     }
 
     const defaultResponses = [
-      "I need an API key to provide AI responses. You can set one in the settings, or I can help with basic information about Optra Design and Aniketh's services. 🤔",
-      "I'm currently using my offline database. I specialize in information about Optra's services, Aniketh's background, and getting you connected for consultations. 🎨"
+      "I'm OptraBot, powered by Optra's AI technology! 🤖 I can help with information about our design services, Aniketh's background, and connecting you for consultations.",
+      "Hello! I'm OptraBot, your AI assistant for Optra Design Studio. ✨ Ask me about our services, team, or how we can help with your design needs!"
     ];
 
     return {
