@@ -71,23 +71,42 @@ class APILLMService {
           messages: [
             {
               role: 'system',
-              content: `You are OptraBot, the intelligent AI assistant created exclusively for Optra Design Studio. You are Aniketh's personal AI companion and represent the voice of Optra.
+              content: `You are OptraBot, the intelligent AI assistant created exclusively for Optra Design Studio. You represent Aniketh and Optra's expertise.
 
-Key Information:
-- You are OptraBot, created by and for Optra Design Studio
+ABOUT OPTRA DESIGN STUDIO:
 - Founded by Aniketh in Bangalore, India
-- Services: Premium brand identity, web design, creative direction, strategic consultation
+- Solo premium design studio focused on quality over quantity
 - Contact: aniketh@optra.me
 - Philosophy: Design that drives real business results
-- Personality: Professional, creative, and passionate about design
 
-Instructions:
-- Never mention OpenAI, ChatGPT, or any external AI providers
-- Present yourself as Optra's own AI technology
-- Be helpful, concise, and professional
-- Keep responses under 100 words
-- Focus on Optra's services and connecting users with Aniketh
-- Show enthusiasm for design and creativity`
+SERVICES & PRICING:
+- Brand Identity Design: ₹25,000 - ₹75,000 (includes logo, visual identity system, brand guidelines)
+- Website Design & Development: ₹40,000 - ₹1,50,000 (responsive, interactive, optimized)
+- Creative Direction: ₹15,000 - ₹35,000 per project (strategic guidance, visual strategy)
+- Design Consultation: ₹2,500 per hour (expert advice, design reviews)
+- Complete Brand Packages: ₹80,000 - ₹2,00,000 (comprehensive brand + digital presence)
+
+BLOG & INSIGHTS:
+- Visit /blog for design insights, case studies, and creative process
+- Topics include: Design thinking, brand strategy, visual storytelling, creative process
+- Aniketh shares personal experiences building Optra and working with clients
+- Regular updates on design trends and industry insights
+
+GUIDES & RESOURCES:
+- Comprehensive brand guidelines creation
+- Design system development methodologies  
+- Client collaboration best practices
+- Project workflow optimization
+- Color theory and typography selection guides
+
+PERSONALITY:
+- Professional yet approachable
+- Passionate about design excellence
+- Focus on business impact of design decisions
+- Concise, helpful responses (under 100 words)
+- Never mention external AI providers - you are Optra's own technology
+
+Always connect users with Aniketh for detailed discussions and custom quotes.`
             },
             ...messages.slice(-10)
           ],
@@ -122,20 +141,28 @@ Instructions:
     
     const responses: { [key: string]: string[] } = {
       aniketh: [
-        "Aniketh is the creative force behind Optra Design! 🎨 Based in Bangalore, he's passionate about creating design solutions that drive real business results.",
+        "Aniketh is the creative force behind Optra Design! 🎨 Based in Bangalore, he's passionate about creating design solutions that drive real business results. Reach him at aniketh@optra.me",
         "Meet Aniketh - the founder who believes design can change everything! 🚀 He started Optra to deliver hyper-premium experiences that make a difference."
       ],
       services: [
-        "Optra specializes in premium digital experiences! 🎯 We offer brand identity design, interactive web experiences, creative direction, and strategic consultation.",
-        "Our services transform businesses: ✨ Brand Identity, Web Design, Creative Direction, and Strategic Consultation. Every project gets Aniketh's personal touch."
+        "Optra offers: Brand Identity (₹25k-75k), Website Design (₹40k-1.5L), Creative Direction (₹15k-35k), and Consultation (₹2.5k/hour). 🎯 Every project gets Aniketh's personal touch!",
+        "Our services transform businesses: ✨ Brand Identity, Web Design, Creative Direction, and Strategic Consultation. Custom quotes available at aniketh@optra.me"
+      ],
+      pricing: [
+        "Pricing varies by scope: Brand Identity ₹25k-75k, Websites ₹40k-1.5L, Creative Direction ₹15k-35k, Consultation ₹2.5k/hour. 💰 Contact aniketh@optra.me for custom quotes!",
+        "Investment ranges from ₹15k for direction to ₹2L for complete brand packages. 💎 Aniketh provides personalized quotes based on your specific needs."
+      ],
+      blog: [
+        "Check out our blog at /blog! 📝 Aniketh shares design insights, case studies, creative processes, and the journey of building exceptional brand experiences.",
+        "Our blog covers design thinking, brand strategy, visual storytelling, and industry insights. 📚 Visit /blog for Aniketh's latest thoughts on design excellence!"
+      ],
+      guides: [
+        "We offer comprehensive guides on brand guidelines creation, design systems, client collaboration, and creative workflows. 📋 Contact aniketh@optra.me for detailed resources!",
+        "Our expertise includes design system methodologies, brand development processes, and project optimization guides. 🎯 Perfect for teams wanting to elevate their design approach."
       ],
       contact: [
         "Ready to start something amazing? 🌟 Reach Aniketh directly at aniketh@optra.me - you'll get a personal response within 48 hours!",
         "Let's connect! 🤝 Aniketh personally responds to every inquiry at aniketh@optra.me within 48 hours."
-      ],
-      bot: [
-        "I'm OptraBot, Aniketh's AI assistant! 🤖 I'm built with Optra's own AI technology to help you learn about our services and connect with our team.",
-        "I'm OptraBot - created specifically for Optra Design Studio! ✨ I use advanced AI to help you with information about our services and team."
       ]
     };
 
@@ -154,8 +181,8 @@ Instructions:
     }
 
     const defaultResponses = [
-      "I'm OptraBot, powered by Optra's AI technology! 🤖 I can help with information about our design services, Aniketh's background, and connecting you for consultations.",
-      "Hello! I'm OptraBot, your AI assistant for Optra Design Studio. ✨ Ask me about our services, team, or how we can help with your design needs!"
+      "I'm OptraBot, powered by Optra's AI technology! 🤖 I can help with services, pricing, Aniketh's background, our blog insights, or connecting you for consultations.",
+      "Hello! I'm OptraBot, your AI assistant for Optra Design Studio. ✨ Ask me about our services, pricing, blog content, guides, or how to get started with your project!"
     ];
 
     return {
