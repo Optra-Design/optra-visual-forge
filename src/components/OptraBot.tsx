@@ -1,20 +1,34 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Sparkles, Settings, User, Bot, Minimize2, Maximize2, Brain, Key } from 'lucide-react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { MessageCircle, X, Send, Sparkles, Settings, User, Bot, Minimize2, Maximize2, Brain } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
-import { callLLM } from '../utils/llmService';
+import { freeLLMService, ChatMessage } from '../utils/freeLlmService';
+
+// Lazy-loaded components
+const OptraBotSettings = lazy(() => import('./OptraBotSettings'));
 
 const OptraBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState(localStorage.getItem('optrabot-api-key') || '');
-  const [messages, setMessages] = useState([
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [isLLMLoaded, setIsLLMLoaded] = useState(false);
+  const [messages, setMessages] = useState<{
+    id: number;
+    text: string;
+    isBot: boolean;
+    timestamp: Date;
+  }[]>([
     {
       id: 1,
-      text: "Hey there! I'm OptraBot ✨ I'm now powered by advanced AI and can have real conversations about Aniketh's work, Optra's services, or anything design-related. What interests you?",
+      text: "Hey there! I'm OptraBot ✨ I run on a free, open-source LLM right in your browser. What can I help you with?",
       isBot: true,
       timestamp: new Date()
+    }
+  ]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
+    {
+      role: 'system',
+      content: `You are OptraBot, an AI assistant for Optra Design Studio founded by Aniketh in Bangalore. You help with information about services, the founder, and connecting users to Aniketh.`
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -30,12 +44,42 @@ const OptraBot = () => {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  // Pre-initialize the LLM model when the component mounts
+  useEffect(() => {
+    const initializeLLM = async () => {
+      if (!isLLMLoaded && !isInitializing) {
+        setIsInitializing(true);
+        
+        try {
+          // Attempt to initialize LLM with a timeout
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('LLM initialization timeout')), 10000);
+          });
+          
+          const initResult = await Promise.race([
+            freeLLMService.initialize(),
+            timeoutPromise
+          ]);
+          
+          setIsLLMLoaded(initResult as boolean);
+        } catch (error) {
+          console.warn('Could not initialize LLM:', error);
+        } finally {
+          setIsInitializing(false);
+        }
+      }
+    };
+
+    // Only initialize when the bot is opened to save resources
+    if (isOpen && !isLLMLoaded) {
+      initializeLLM();
+    }
+  }, [isOpen, isLLMLoaded, isInitializing]);
+
   const quickReplies = [
     "Tell me about Aniketh",
     "What services do you offer?",
-    "Show me pricing info",
     "How can I get in touch?",
-    "Creative process insights",
     "Portfolio examples"
   ];
 
@@ -43,30 +87,52 @@ const OptraBot = () => {
     const timer = setTimeout(() => {
       if (!isOpen && messages.length === 1) {
         setIsOpen(true);
-        addBotMessage("I'm now AI-powered and ready for real conversations! 🤖 Ask me anything about design, Optra's services, or Aniketh's creative approach. I can even discuss your project ideas! ✨");
+        addBotMessage("I'm powered by a free open-source LLM running in your browser! 🤖 Ask me anything about design, Optra's services, or Aniketh's creative approach. ✨", false);
       }
     }, 30000);
 
     return () => clearTimeout(timer);
   }, [isOpen, messages.length]);
 
-  const addBotMessage = async (text: string, useAI: boolean = false, conversationHistory: any[] = []) => {
+  const addBotMessage = async (text: string, useAI: boolean = false) => {
     setIsTyping(true);
     
     let response = text;
+    let newChatHistory = [...chatHistory];
     
     if (useAI && text) {
-      const chatHistory = conversationHistory.map(msg => ({
-        role: msg.isBot ? 'assistant' : 'user' as const,
-        content: msg.text
-      }));
-      
-      chatHistory.push({ role: 'user' as const, content: text });
-      
-      const llmResponse = await callLLM(chatHistory, apiKey || undefined);
-      response = llmResponse.response;
+      try {
+        // Add user message to chat history
+        newChatHistory = [
+          ...chatHistory,
+          { role: 'user', content: text }
+        ];
+        
+        // Get response from the LLM
+        const llmResponse = await freeLLMService.generateResponse(newChatHistory);
+        
+        // Add assistant response to chat history
+        newChatHistory = [
+          ...newChatHistory,
+          { role: 'assistant', content: llmResponse.response }
+        ];
+        
+        response = llmResponse.response;
+        
+        // Trim history if it gets too long (keep last 10 messages)
+        if (newChatHistory.length > 12) {
+          const systemMessage = newChatHistory[0];
+          newChatHistory = [systemMessage, ...newChatHistory.slice(newChatHistory.length - 10)];
+        }
+        
+        setChatHistory(newChatHistory);
+      } catch (error) {
+        console.error('Error generating response:', error);
+        response = "I'm having trouble responding right now. Please try again in a moment.";
+      }
     }
     
+    // Add slight delay for natural feeling
     setTimeout(() => {
       setMessages(prev => [...prev, {
         id: Date.now(),
@@ -75,10 +141,12 @@ const OptraBot = () => {
         timestamp: new Date()
       }]);
       setIsTyping(false);
-    }, 500 + Math.random() * 1000);
+    }, 300 + Math.random() * 500);
   };
 
   const handleSendMessage = async (text: string) => {
+    if (!text.trim()) return;
+    
     const userMessage = {
       id: Date.now(),
       text,
@@ -86,28 +154,17 @@ const OptraBot = () => {
       timestamp: new Date()
     };
 
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputText('');
 
     // Use AI for response
-    await addBotMessage(text, true, updatedMessages);
+    await addBotMessage(text, true);
   };
 
   const handleClose = () => {
     setIsOpen(false);
     setIsMinimized(false);
     setShowSettings(false);
-  };
-
-  const saveApiKey = () => {
-    localStorage.setItem('optrabot-api-key', apiKey);
-    setShowSettings(false);
-  };
-
-  const clearApiKey = () => {
-    setApiKey('');
-    localStorage.removeItem('optrabot-api-key');
   };
 
   return (
@@ -139,64 +196,16 @@ const OptraBot = () => {
               <Maximize2 className="w-6 h-6" />
             </button>
           ) : showSettings ? (
-            <div className="p-6 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold text-gradient flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  AI Settings
-                </h3>
-                <button
-                  onClick={() => setShowSettings(false)}
-                  className="p-1 text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
               </div>
-              
-              <div className="flex-1 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-                    <Key className="w-4 h-4" />
-                    OpenAI API Key (Optional)
-                  </label>
-                  <input
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="sk-..."
-                    className="w-full bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/50 transition-colors"
-                  />
-                  <p className="text-xs text-foreground/60 mt-2">
-                    Add your OpenAI API key for enhanced AI responses. Without it, I'll use smart built-in responses.
-                  </p>
-                </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    onClick={saveApiKey}
-                    className="flex-1 bg-green-500/20 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/30 transition-colors text-sm font-medium"
-                  >
-                    Save Key
-                  </button>
-                  <button
-                    onClick={clearApiKey}
-                    className="flex-1 bg-red-500/20 text-red-400 px-4 py-2 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
-                  >
-                    Clear
-                  </button>
-                </div>
-                
-                <div className="mt-6 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Brain className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm font-medium text-blue-400">AI Status</span>
-                  </div>
-                  <p className="text-xs text-blue-300">
-                    {apiKey ? '🤖 Enhanced AI enabled with your API key' : '🧠 Smart built-in responses active'}
-                  </p>
-                </div>
-              </div>
-            </div>
+            }>
+              <OptraBotSettings 
+                onClose={() => setShowSettings(false)} 
+                setIsLLMLoaded={setIsLLMLoaded}
+              />
+            </Suspense>
           ) : (
             <>
               <div className="p-4 border-b border-white/20 flex items-center gap-3">
@@ -205,7 +214,7 @@ const OptraBot = () => {
                   <h3 className="font-bold text-gradient">OptraBot</h3>
                   <p className="text-xs text-foreground/70 flex items-center gap-1">
                     <Brain className="w-3 h-3" />
-                    AI-Powered Assistant
+                    {isLLMLoaded ? 'Free Open-Source LLM' : 'Initializing...'}
                   </p>
                 </div>
                 <button
@@ -273,13 +282,23 @@ const OptraBot = () => {
                 <div ref={messagesEndRef} />
               </div>
 
+              {isInitializing && !isLLMLoaded && (
+                <div className="p-3 border-t border-white/20 text-center">
+                  <div className="text-xs text-foreground/70 flex items-center justify-center gap-2">
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                    Loading free LLM model...
+                  </div>
+                </div>
+              )}
+
               <div className="p-3 border-t border-white/20">
                 <div className="flex flex-wrap gap-1 mb-3">
                   {quickReplies.slice(0, isMobile ? 2 : 3).map((reply, index) => (
                     <button
                       key={index}
                       onClick={() => handleSendMessage(reply)}
-                      className="text-xs px-3 py-1 bg-white/10 rounded-full hover:bg-white/20 transition-all hover:scale-105 border border-white/20"
+                      disabled={isInitializing && !isLLMLoaded}
+                      className="text-xs px-3 py-1 bg-white/10 rounded-full hover:bg-white/20 transition-all hover:scale-105 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {reply}
                     </button>
@@ -294,12 +313,14 @@ const OptraBot = () => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && inputText.trim() && handleSendMessage(inputText)}
-                    placeholder="Ask me anything about Optra..."
-                    className="flex-1 bg-white/10 border border-white/30 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/50 transition-colors"
+                    placeholder={isInitializing && !isLLMLoaded ? "Loading model..." : "Ask me anything about Optra..."}
+                    disabled={isInitializing && !isLLMLoaded}
+                    className="flex-1 bg-white/10 border border-white/30 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-white/50 transition-colors disabled:opacity-50"
                   />
                   <button
                     onClick={() => inputText.trim() && handleSendMessage(inputText)}
-                    className="w-10 h-10 bg-optra-gradient rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-200"
+                    disabled={isInitializing && !isLLMLoaded}
+                    className="w-10 h-10 bg-optra-gradient rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send size={16} />
                   </button>
