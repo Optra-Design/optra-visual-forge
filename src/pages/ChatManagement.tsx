@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { MessageCircle, User, Clock, Send, ArrowLeft, Globe, Smartphone, Monitor } from 'lucide-react';
@@ -194,7 +193,6 @@ const ChatManagement = () => {
                           {message.userInfo && !message.isFounder && (
                             <span className="flex items-center gap-1">
                               {getDeviceIcon(message.userInfo.userAgent || '')}
-                              <span>{message.userInfo.location}</span>
                             </span>
                           )}
                         </div>

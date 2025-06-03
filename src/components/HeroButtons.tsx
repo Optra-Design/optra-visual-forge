@@ -1,6 +1,5 @@
 
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 
 const HeroButtons = () => {
   return (
@@ -8,11 +7,11 @@ const HeroButtons = () => {
       <Button 
         size="lg" 
         className="bg-optra-gradient hover:scale-105 transition-transform px-8 py-4 text-lg font-semibold"
-        asChild
+        onClick={() => {
+          document.querySelector('#services')?.scrollIntoView({ behavior: 'smooth' });
+        }}
       >
-        <Link to="/contact">
-          Start Your Project
-        </Link>
+        Explore Our Work
       </Button>
     </div>
   );
