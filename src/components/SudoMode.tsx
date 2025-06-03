@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Palette, Layout, Zap, LogIn, LogOut, User, Sparkles, Smartphone, Bug, Minimize2, Maximize2, MessageCircle, Users, Clock, Send } from 'lucide-react';
+import { Settings, Palette, Layout, Zap, LogIn, LogOut, User, Sparkles, Smartphone, Bug, Minimize2, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '../hooks/use-mobile';
-import { chatStorageService } from '../utils/chatStorageService';
 
 const SudoMode = () => {
   const [isActive, setIsActive] = useState(false);
@@ -17,7 +16,6 @@ const SudoMode = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [touchCount, setTouchCount] = useState(0);
-  
   const { isLoggedIn, login, logout, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -190,10 +188,6 @@ const SudoMode = () => {
     }
   };
 
-  const getUserMessageCount = () => {
-    return chatStorageService.getAllMessages().filter(msg => !msg.isFounder).length;
-  };
-
   if (!isActive) return null;
 
   return (
@@ -251,12 +245,7 @@ const SudoMode = () => {
                   <div className="flex items-center gap-2 p-3 bg-green-500/20 rounded-xl">
                     <User className="w-5 h-5 text-green-400" />
                     <div className="flex-1">
-                      <button
-                        onClick={() => navigate('/chat-management')}
-                        className="text-sm font-bold text-green-400 hover:underline cursor-pointer"
-                      >
-                        Aniketh
-                      </button>
+                      <div className="text-sm font-bold text-green-400">Aniketh</div>
                       <div className="text-xs text-green-400/70">Founder & Admin</div>
                     </div>
                     <button
@@ -305,27 +294,6 @@ const SudoMode = () => {
                 </div>
               )}
             </div>
-
-            {/* Chat Overview - Only visible when logged in */}
-            {isLoggedIn && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <MessageCircle className="w-5 h-5" />
-                  <span className="text-sm font-bold">Chat Overview</span>
-                  <span className="text-xs bg-purple-500/30 text-purple-400 px-2 py-1 rounded-full">
-                    {getUserMessageCount()} msgs
-                  </span>
-                </div>
-                
-                <button
-                  onClick={() => navigate('/chat-management')}
-                  className="w-full p-3 bg-purple-500/20 text-purple-400 rounded-xl hover:bg-purple-500/30 transition-all hover:scale-105 text-sm font-semibold flex items-center justify-center gap-2"
-                >
-                  <Users className="w-4 h-4" />
-                  Open Chat Management
-                </button>
-              </div>
-            )}
 
             <div>
               <div className="flex items-center gap-2 mb-3">

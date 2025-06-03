@@ -1,8 +1,15 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, User, UserCheck, Minimize2, Maximize2, Phone, Mail, MapPin } from 'lucide-react';
+import { MessageCircle, X, Send, User, UserCheck, Minimize2, Maximize2 } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
-import { useAuth } from '../contexts/AuthContext';
-import { chatStorageService, ChatMessage } from '../utils/chatStorageService';
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  isFounder: boolean;
+  timestamp: Date;
+  status: 'sent' | 'delivered' | 'read';
+}
 
 const FounderChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,90 +17,90 @@ const FounderChat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isFounderOnline, setIsFounderOnline] = useState(true);
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [contactInfo, setContactInfo] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: ''
-  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  const { isLoggedIn } = useAuth();
 
-  // Load chat history and founder status
+  // Load chat history from localStorage on mount
   useEffect(() => {
-    const loadedMessages = chatStorageService.getAllMessages();
-    const savedStatus = localStorage.getItem('founderOnlineStatus');
-    
-    if (loadedMessages.length > 0) {
-      setMessages(loadedMessages);
+    const savedMessages = localStorage.getItem('founderChatHistory');
+    if (savedMessages) {
+      const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      }));
+      setMessages(parsedMessages);
     } else {
       // Welcome message if no history exists
-      const welcomeMessage = chatStorageService.saveMessage({
-        text: "Hey! 👋 I'm Aniketh, founder of Optra Design. I'm here to personally chat with you about your design needs, answer questions, or just have a friendly conversation! To get started, would you mind sharing your contact details?",
+      const welcomeMessage: ChatMessage = {
+        id: '1',
+        text: "Hey! 👋 I'm Aniketh, founder of Optra Design. I'm here to personally chat with you about your design needs, answer questions, or just have a friendly conversation!",
         isFounder: true,
+        timestamp: new Date(),
         status: 'delivered'
-      });
+      };
       setMessages([welcomeMessage]);
-    }
-
-    if (savedStatus) {
-      setIsFounderOnline(JSON.parse(savedStatus));
     }
   }, []);
 
-  // Save founder status to localStorage
+  // Save messages to localStorage whenever messages change
   useEffect(() => {
-    localStorage.setItem('founderOnlineStatus', JSON.stringify(isFounderOnline));
-  }, [isFounderOnline]);
+    if (messages.length > 0) {
+      localStorage.setItem('founderChatHistory', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Simulate founder responses (in real implementation, this would be a real chat system)
+  const simulateFounderResponse = (userMessage: string) => {
+    setTimeout(() => {
+      const responses = [
+        "Thanks for reaching out! I'd love to help you with your design project. Tell me more about what you have in mind! 🎨",
+        "That's an interesting challenge! At Optra, we love tackling unique design problems. What's your timeline looking like?",
+        "I appreciate you sharing that! Let's schedule a quick call to discuss this in detail. What works best for you?",
+        "Great question! I've worked on similar projects before. The key is understanding your brand's core message first.",
+        "I'm excited about this project! Feel free to email me directly at aniketh@optra.me for a more detailed discussion.",
+        "Thanks for your interest in Optra! I personally handle all client relationships to ensure we deliver exactly what you envision."
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      const founderMessage: ChatMessage = {
+        id: Date.now().toString(),
+        text: randomResponse,
+        isFounder: true,
+        timestamp: new Date(),
+        status: 'delivered'
+      };
+      
+      setMessages(prev => [...prev, founderMessage]);
+    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+  };
+
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
     
-    console.log('Sending message:', inputText);
-    
-    const userMessage = chatStorageService.saveMessage({
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
       text: inputText,
       isFounder: false,
+      timestamp: new Date(),
       status: 'sent'
-    });
+    };
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     
-    // Mark user messages as delivered after a short delay
-    setTimeout(() => {
-      chatStorageService.updateMessageStatus(userMessage.id, 'delivered');
-      setMessages(prev => prev.map(msg => 
-        msg.id === userMessage.id ? { ...msg, status: 'delivered' } : msg
-      ));
-    }, 1000);
-  };
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const contactMessage = chatStorageService.saveMessage({
-      text: `Here are my contact details:\n\nName: ${contactInfo.name}\nEmail: ${contactInfo.email}\nPhone: ${contactInfo.phone}\nCompany: ${contactInfo.company}`,
-      isFounder: false,
-      status: 'sent',
-      contactInfo: { ...contactInfo }
-    });
-
-    setMessages(prev => [...prev, contactMessage]);
-    setShowContactForm(false);
-    setContactInfo({ name: '', email: '', phone: '', company: '' });
+    // Simulate founder response
+    simulateFounderResponse(inputText);
   };
 
   const clearChatHistory = () => {
-    chatStorageService.clearAllMessages();
     setMessages([]);
+    localStorage.removeItem('founderChatHistory');
   };
 
   if (!isOpen) {
@@ -138,13 +145,6 @@ const FounderChat = () => {
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
-                onClick={() => setShowContactForm(true)}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs"
-                title="Share contact details"
-              >
-                <Mail className="w-3 h-3" />
-              </button>
-              <button
                 onClick={clearChatHistory}
                 className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs"
                 title="Clear chat history"
@@ -166,62 +166,6 @@ const FounderChat = () => {
             </div>
           </div>
 
-          {/* Contact Form Modal */}
-          {showContactForm && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4 z-10">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-sm">
-                <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Share Your Contact Details</h3>
-                <form onSubmit={handleContactSubmit} className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Your Name *"
-                    value={contactInfo.name}
-                    onChange={(e) => setContactInfo(prev => ({ ...prev, name: e.target.value }))}
-                    required
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email Address *"
-                    value={contactInfo.email}
-                    onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    value={contactInfo.phone}
-                    onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Company/Organization"
-                    value={contactInfo.company}
-                    onChange={(e) => setContactInfo(prev => ({ ...prev, company: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 rounded-lg text-sm font-medium"
-                    >
-                      Share Details
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowContactForm(false)}
-                      className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3 min-h-0">
             {messages.map(message => (
@@ -242,15 +186,7 @@ const FounderChat = () => {
                         : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
-                    {message.contactInfo && (
-                      <div className="mt-2 pt-2 border-t border-white/20 text-xs">
-                        <div className="flex items-center gap-1 mb-1">
-                          <User className="w-3 h-3" />
-                          <span className="font-medium">Contact Info Shared</span>
-                        </div>
-                      </div>
-                    )}
+                    <p className="text-sm leading-relaxed">{message.text}</p>
                     <div className={`text-xs mt-1 ${message.isFounder ? 'text-gray-500' : 'text-purple-100'}`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       {!message.isFounder && (

@@ -27,7 +27,6 @@ const Pulse = lazy(() => import("./pages/Pulse"));
 const Founder = lazy(() => import("./pages/Founder"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Test404 = lazy(() => import("./pages/Test404"));
-const ChatManagement = lazy(() => import("./pages/ChatManagement"));
 
 const queryClient = new QueryClient();
 
@@ -59,7 +58,6 @@ const App = () => (
                 <Route path="/pulse" element={<Pulse />} />
                 <Route path="/founder" element={<Founder />} />
                 <Route path="/blog" element={<Blog />} />
-                <Route path="/chat-management" element={<ChatManagement />} />
                 <Route path="/test-404" element={<Test404 />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

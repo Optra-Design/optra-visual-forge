@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import Navigation from '../components/Navigation';
 import { Edit3, Save, Plus, Trash2, Calendar, User, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -84,6 +86,8 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen">
+      <Navigation />
+      
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
