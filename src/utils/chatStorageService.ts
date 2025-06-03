@@ -12,7 +12,7 @@ interface ChatMessage {
     company?: string;
     sessionId?: string;
     userAgent?: string;
-    location?: string;
+    ipAddress?: string;
   };
   contactInfo?: {
     name?: string;
@@ -42,15 +42,15 @@ class ChatStorageService {
   }
 
   private getStorageKey(): string {
-    return 'optra_global_chat_messages';
+    return 'optra_chat_messages';
   }
 
   private getSessionInfo() {
     return {
       sessionId: this.sessionId,
-      userAgent: navigator.userAgent.slice(0, 100),
-      location: window.location.hostname,
-      timestamp: new Date().toISOString()
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+      url: window.location.href
     };
   }
 
@@ -70,7 +70,7 @@ class ChatStorageService {
     
     try {
       localStorage.setItem(this.getStorageKey(), JSON.stringify(updatedMessages));
-      console.log('💬 Message saved globally:', newMessage);
+      console.log('💬 Message saved:', newMessage);
     } catch (error) {
       console.error('Failed to save message:', error);
     }

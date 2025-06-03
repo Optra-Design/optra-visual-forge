@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, User, UserCheck, Minimize2, Maximize2, Phone, Mail, MapPin } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -56,6 +55,8 @@ const FounderChat = () => {
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
+    
+    console.log('Sending message:', inputText);
     
     const userMessage = chatStorageService.saveMessage({
       text: inputText,
