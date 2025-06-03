@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 
 // Enhanced Experiment Components
 const ColorHarmonics = ({ isPlaying, clickCount }: { isPlaying: boolean; clickCount: number }) => {
@@ -369,6 +370,111 @@ const GeometryLab = ({ isPlaying, clickCount }: { isPlaying: boolean; clickCount
       </div>
       <div className="absolute bottom-4 text-xs text-foreground/60 animate-bounce">
         🔮 Click to add more dimensions!
+      </div>
+    </div>
+  );
+};
+
+const Lab = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentExperiment, setCurrentExperiment] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [clickCount, setClickCount] = useState(0);
+
+  const experiments = [
+    { name: 'Color Harmonics', component: ColorHarmonics, emoji: '🎨' },
+    { name: 'Motion Studies', component: MotionStudies, emoji: '🌊' },
+    { name: 'Typography Lab', component: TypographyLab, emoji: '✍️' },
+    { name: 'Interactive Particles', component: InteractiveParticles, emoji: '✨' },
+    { name: 'Sound Visualizer', component: SoundVisualizer, emoji: '🎵' },
+    { name: 'Geometry Lab', component: GeometryLab, emoji: '🔮' }
+  ];
+
+  const CurrentExperiment = experiments[currentExperiment].component;
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleClick = () => {
+    setClickCount(prev => prev + 1);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent animate-pulse">
+            DESIGN LAB
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            Interactive experiments in real-time creativity
+          </p>
+        </div>
+
+        {/* Experiment Controls */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          {experiments.map((exp, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentExperiment(index)}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-110 ${
+                currentExperiment === index
+                  ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                  : 'bg-secondary/20 text-secondary-foreground hover:bg-secondary/40'
+              }`}
+            >
+              {exp.emoji} {exp.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Play/Pause Control */}
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className={`px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-110 ${
+              isPlaying
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            {isPlaying ? '⏸️ PAUSE' : '▶️ PLAY'} EXPERIMENT
+          </button>
+        </div>
+
+        {/* Experiment Display */}
+        <div 
+          className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-2xl min-h-[600px] transition-all duration-500 hover:shadow-3xl cursor-crosshair"
+          onMouseMove={handleMouseMove}
+          onClick={handleClick}
+        >
+          <CurrentExperiment 
+            isPlaying={isPlaying} 
+            mousePosition={mousePosition}
+            clickCount={clickCount}
+          />
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="bg-card/30 backdrop-blur-sm p-6 rounded-xl text-center">
+            <div className="text-3xl font-bold text-primary">{clickCount}</div>
+            <div className="text-sm text-muted-foreground">Interactions</div>
+          </div>
+          <div className="bg-card/30 backdrop-blur-sm p-6 rounded-xl text-center">
+            <div className="text-3xl font-bold text-secondary">60</div>
+            <div className="text-sm text-muted-foreground">FPS</div>
+          </div>
+          <div className="bg-card/30 backdrop-blur-sm p-6 rounded-xl text-center">
+            <div className="text-3xl font-bold text-accent">{experiments[currentExperiment].name}</div>
+            <div className="text-sm text-muted-foreground">Current Lab</div>
+          </div>
+        </div>
       </div>
     </div>
   );
