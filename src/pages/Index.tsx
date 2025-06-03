@@ -15,7 +15,7 @@ const Index = () => {
             Where creativity meets strategy. We craft digital experiences that don't just look stunning—they drive results and transform businesses.
           </p>
           
-          <HeroButtons />
+         
         </div>
 
         {/* Scroll indicator */}
