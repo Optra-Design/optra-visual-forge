@@ -1,179 +1,134 @@
-import React, { useEffect } from 'react';
-import Navigation from '../components/Navigation';
+
+import { lazy, Suspense } from 'react';
 import AnimatedHeroText from '../components/AnimatedHeroText';
-import SecretSudoButton from '../components/SecretSudoButton';
-import { ArrowRight, Sparkles, Zap, Palette, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Star, Users, Zap, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const ContactFormTest = lazy(() => import('../components/ContactFormTest'));
+
 const Index = () => {
-  useEffect(() => {
-    // SEO meta tags
-    document.title = 'Optra Design - Premium Design Studio by Aniketh | Brand Identity & Digital Experiences';
-    
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Optra Design is a premium design studio founded by Aniketh in Bangalore. We create distinctive brand identities, interactive digital experiences, and strategic creative direction that elevates your business.');
-    } else {
-      const meta = document.createElement('meta');
-      meta.name = 'description';
-      meta.content = 'Optra Design is a premium design studio founded by Aniketh in Bangalore. We create distinctive brand identities, interactive digital experiences, and strategic creative direction that elevates your business.';
-      document.head.appendChild(meta);
-    }
-
-    // Keywords meta tag
-    const metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (!metaKeywords) {
-      const meta = document.createElement('meta');
-      meta.name = 'keywords';
-      meta.content = 'design studio, brand identity, UI UX design, digital experiences, creative direction, Bangalore designer, Aniketh, Optra Design, web design, graphic design';
-      document.head.appendChild(meta);
-    }
-
-    console.log(`
-    🎨 Welcome to Optra Design's console!
-    
-    ╔═══════════════════════════════════════╗
-    ║           OPTRA DESIGN               ║
-    ║        Shape. Style. Scale.          ║
-    ║         Founded by Aniketh           ║
-    ╚═══════════════════════════════════════╝
-    
-    Try typing:
-    - optra.sudo() for hidden features
-    - optra.magic() for something special
-    - optra.contact() for quick contact
-    
-    Built with ❤️ by Aniketh in Bangalore
-    `);
-
-    (window as any).optra = {
-      sudo: () => {
-        document.dispatchEvent(new CustomEvent('sudo-mode-toggle'));
-        console.log('🔓 Sudo mode toggled! Welcome to the admin zone, Aniketh!');
-      },
-      magic: () => {
-        document.body.classList.add('glitch');
-        setTimeout(() => document.body.classList.remove('glitch'), 2000);
-        console.log('✨ Magic activated by the founder!');
-      },
-      contact: () => {
-        window.location.href = 'mailto:aniketh@optra.me';
-        console.log('📧 Opening contact to Aniketh...');
-      }
-    };
-  }, []);
-
-  const features = [
-    {
-      icon: <Palette className="w-8 h-8" />,
-      title: "Brand Identity",
-      description: "Distinctive visual systems that capture essence and drive recognition."
-    },
-    {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Digital Experiences",
-      description: "Interactive interfaces that engage, delight, and convert users."
-    },
-    {
-      icon: <Sparkles className="w-8 h-8" />,
-      title: "Creative Direction",
-      description: "Strategic vision that aligns creativity with business objectives."
-    },
-    {
-      icon: <Users className="w-8 h-8" />,
-      title: "Consultation",
-      description: "Expert guidance to elevate your design and brand strategy."
-    }
-  ];
-
   return (
-    <div className="min-h-screen relative">
-      <Navigation />
-      <SecretSudoButton />
-      
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 relative">
-        <AnimatedHeroText />
-        
-        {/* Caution Button - Hidden Easter Egg */}
-        <Link 
-          to="/404" 
-          className="absolute bottom-8 right-8 opacity-10 hover:opacity-100 transition-opacity duration-300 text-xs text-foreground/50 hover:text-gradient"
-          aria-label="Hidden easter egg"
-        >
-          ⚠️
-        </Link>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 px-4 relative">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold text-gradient mb-6">
-              Crafted by Aniketh
-            </h2>
-            <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
-              Every pixel purposeful. Every interaction intentional. 
-              Every design decision driven by passion and innovation from Bangalore's premier design studio.
-            </p>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <AnimatedHeroText />
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+            Where creativity meets strategy. We craft digital experiences that don't just look stunning—they drive results and transform businesses.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Button 
+              size="lg" 
+              className="bg-optra-gradient hover:bg-optra-gradient-hover text-white px-8 py-4 text-lg font-semibold group"
+              asChild
+            >
+              <Link to="/services">
+                Explore Services
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-2 border-primary/20 hover:border-primary/40 px-8 py-4 text-lg font-semibold"
+              asChild
+            >
+              <Link to="/contact">
+                Start Your Project
+              </Link>
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className="group p-8 glass rounded-2xl hover:bg-white/10 transition-all duration-500 glow-hover animate-fade-in cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="text-gradient mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-gradient transition-colors duration-300">
-                  {feature.title}
-                </h3>
-                <p className="text-foreground/70 leading-relaxed">
-                  {feature.description}
-                </p>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">50+</div>
+              <div className="text-sm text-muted-foreground">Projects Delivered</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">100%</div>
+              <div className="text-sm text-muted-foreground">Client Satisfaction</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">24/7</div>
+              <div className="text-sm text-muted-foreground">Design Support</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">3+</div>
+              <div className="text-sm text-muted-foreground">Years Experience</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-primary/30 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Preview */}
+      <section className="py-20 bg-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">What We Create</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              From brand identity to digital experiences, we bring your vision to life with precision and creativity.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="glass-card p-8 text-center group hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-optra-gradient rounded-full flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform">
+                <Star className="h-8 w-8 text-white" />
               </div>
-            ))}
+              <h3 className="text-2xl font-bold mb-4">Brand Identity</h3>
+              <p className="text-muted-foreground">
+                Comprehensive brand systems that capture your essence and resonate with your audience.
+              </p>
+            </div>
+            
+            <div className="glass-card p-8 text-center group hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-optra-gradient rounded-full flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform">
+                <Zap className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">Web Design</h3>
+              <p className="text-muted-foreground">
+                Interactive websites that combine stunning visuals with seamless user experience.
+              </p>
+            </div>
+            
+            <div className="glass-card p-8 text-center group hover:scale-105 transition-all duration-300">
+              <div className="w-16 h-16 bg-optra-gradient rounded-full flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform">
+                <Award className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">Creative Direction</h3>
+              <p className="text-muted-foreground">
+                Strategic creative guidance to ensure your brand communicates effectively across all touchpoints.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 relative">
-        <div className="max-w-4xl mx-auto text-center glass p-12 rounded-3xl glow-hover">
-          <h2 className="text-4xl md:text-5xl font-bold text-gradient mb-6">
-            Ready to Transform?
-          </h2>
-          <p className="text-xl text-foreground/70 mb-8 max-w-2xl mx-auto">
-            Let's create something extraordinary together with Aniketh. 
-            Premium design solutions that elevate your brand and captivate your audience.
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Brand?</h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Let's collaborate to create something extraordinary. Your vision, our expertise.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              to="/contact"
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#FF6B35] via-[#E91E63] to-[#9C27B0] text-white font-semibold rounded-full transition-all duration-300 hover:scale-105 glow-hover"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </Link>
-            
-            <Link 
-              to="/blog"
-              className="px-8 py-4 border border-white/20 text-foreground font-semibold rounded-full hover:bg-white/5 transition-all duration-300 hover:border-white/40 hover:text-gradient"
-            >
-              Read the Blog
-            </Link>
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-white/10">
-            <p className="text-sm text-foreground/50">
-              Founded by Aniketh in Bangalore • Response within 48 hours • Premium quality guaranteed
-            </p>
-          </div>
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          }>
+            <ContactFormTest />
+          </Suspense>
         </div>
       </section>
     </div>

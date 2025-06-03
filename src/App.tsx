@@ -8,6 +8,7 @@ import { lazy, Suspense } from 'react';
 import { AuthProvider } from "./contexts/AuthContext";
 
 // Eagerly loaded components
+import Navigation from "./components/Navigation";
 import BackgroundParticles from "./components/BackgroundParticles";
 import SudoMode from "./components/SudoMode";
 import DynamicGradients from "./components/DynamicGradients";
@@ -15,6 +16,7 @@ import EasterEggs from "./components/EasterEggs";
 
 // Lazily loaded components for better performance
 const OptraBot = lazy(() => import("./components/OptraBot"));
+const FounderChat = lazy(() => import("./components/FounderChat"));
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Services = lazy(() => import("./pages/Services"));
@@ -45,6 +47,7 @@ const App = () => (
             <DynamicGradients />
             <BackgroundParticles />
             <EasterEggs />
+            <Navigation />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -61,6 +64,9 @@ const App = () => (
             </Suspense>
             <Suspense fallback={null}>
               <OptraBot />
+            </Suspense>
+            <Suspense fallback={null}>
+              <FounderChat />
             </Suspense>
             <SudoMode />
           </div>
