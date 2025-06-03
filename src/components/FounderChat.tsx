@@ -3,20 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, User, UserCheck, Minimize2, Maximize2, Phone, Mail, MapPin } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../contexts/AuthContext';
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  isFounder: boolean;
-  timestamp: Date;
-  status: 'sent' | 'delivered' | 'read';
-  contactInfo?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    company?: string;
-  };
-}
+import { chatStorageService, ChatMessage } from '../utils/chatStorageService';
 
 const FounderChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,26 +22,20 @@ const FounderChat = () => {
   const isMobile = useIsMobile();
   const { isLoggedIn } = useAuth();
 
-  // Load chat history and founder status from localStorage
+  // Load chat history and founder status
   useEffect(() => {
-    const savedMessages = localStorage.getItem('founderChatHistory');
+    const loadedMessages = chatStorageService.getAllMessages();
     const savedStatus = localStorage.getItem('founderOnlineStatus');
     
-    if (savedMessages) {
-      const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      }));
-      setMessages(parsedMessages);
+    if (loadedMessages.length > 0) {
+      setMessages(loadedMessages);
     } else {
       // Welcome message if no history exists
-      const welcomeMessage: ChatMessage = {
-        id: '1',
+      const welcomeMessage = chatStorageService.saveMessage({
         text: "Hey! 👋 I'm Aniketh, founder of Optra Design. I'm here to personally chat with you about your design needs, answer questions, or just have a friendly conversation! To get started, would you mind sharing your contact details?",
         isFounder: true,
-        timestamp: new Date(),
         status: 'delivered'
-      };
+      });
       setMessages([welcomeMessage]);
     }
 
@@ -63,13 +44,7 @@ const FounderChat = () => {
     }
   }, []);
 
-  // Save messages and status to localStorage
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem('founderChatHistory', JSON.stringify(messages));
-    }
-  }, [messages]);
-
+  // Save founder status to localStorage
   useEffect(() => {
     localStorage.setItem('founderOnlineStatus', JSON.stringify(isFounderOnline));
   }, [isFounderOnline]);
@@ -82,19 +57,18 @@ const FounderChat = () => {
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
     
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+    const userMessage = chatStorageService.saveMessage({
       text: inputText,
       isFounder: false,
-      timestamp: new Date(),
       status: 'sent'
-    };
+    });
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     
     // Mark user messages as delivered after a short delay
     setTimeout(() => {
+      chatStorageService.updateMessageStatus(userMessage.id, 'delivered');
       setMessages(prev => prev.map(msg => 
         msg.id === userMessage.id ? { ...msg, status: 'delivered' } : msg
       ));
@@ -104,14 +78,12 @@ const FounderChat = () => {
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const contactMessage: ChatMessage = {
-      id: Date.now().toString(),
+    const contactMessage = chatStorageService.saveMessage({
       text: `Here are my contact details:\n\nName: ${contactInfo.name}\nEmail: ${contactInfo.email}\nPhone: ${contactInfo.phone}\nCompany: ${contactInfo.company}`,
       isFounder: false,
-      timestamp: new Date(),
       status: 'sent',
       contactInfo: { ...contactInfo }
-    };
+    });
 
     setMessages(prev => [...prev, contactMessage]);
     setShowContactForm(false);
@@ -119,8 +91,8 @@ const FounderChat = () => {
   };
 
   const clearChatHistory = () => {
+    chatStorageService.clearAllMessages();
     setMessages([]);
-    localStorage.removeItem('founderChatHistory');
   };
 
   if (!isOpen) {

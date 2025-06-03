@@ -3,20 +3,7 @@ import { Settings, Palette, Layout, Zap, LogIn, LogOut, User, Sparkles, Smartpho
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '../hooks/use-mobile';
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  isFounder: boolean;
-  timestamp: Date;
-  status: 'sent' | 'delivered' | 'read';
-  contactInfo?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    company?: string;
-  };
-}
+import { chatStorageService } from '../utils/chatStorageService';
 
 const SudoMode = () => {
   const [isActive, setIsActive] = useState(false);
@@ -31,69 +18,9 @@ const SudoMode = () => {
   const [password, setPassword] = useState('');
   const [touchCount, setTouchCount] = useState(0);
   
-  // Founder chat management states
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [founderReply, setFounderReply] = useState('');
-  const [isFounderOnline, setIsFounderOnline] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
-  
   const { isLoggedIn, login, logout, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-
-  // Load chat messages when founder logs in
-  useEffect(() => {
-    if (isLoggedIn) {
-      const savedMessages = localStorage.getItem('founderChatHistory');
-      const savedStatus = localStorage.getItem('founderOnlineStatus');
-      
-      if (savedMessages) {
-        const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
-        setChatMessages(parsedMessages);
-      }
-      
-      if (savedStatus) {
-        setIsFounderOnline(JSON.parse(savedStatus));
-      }
-    }
-  }, [isLoggedIn]);
-
-  // Save founder status changes
-  useEffect(() => {
-    if (isLoggedIn) {
-      localStorage.setItem('founderOnlineStatus', JSON.stringify(isFounderOnline));
-    }
-  }, [isFounderOnline, isLoggedIn]);
-
-  const handleFounderReply = (messageId?: string) => {
-    if (!founderReply.trim()) return;
-    
-    const replyMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text: founderReply,
-      isFounder: true,
-      timestamp: new Date(),
-      status: 'delivered'
-    };
-
-    const updatedMessages = [...chatMessages, replyMessage];
-    setChatMessages(updatedMessages);
-    localStorage.setItem('founderChatHistory', JSON.stringify(updatedMessages));
-    setFounderReply('');
-    setSelectedMessage(null);
-  };
-
-  const getUserMessages = () => {
-    return chatMessages.filter(msg => !msg.isFounder);
-  };
-
-  const getContactDetails = () => {
-    const contactMessages = chatMessages.filter(msg => msg.contactInfo);
-    return contactMessages.length > 0 ? contactMessages[contactMessages.length - 1].contactInfo : null;
-  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isMinimized || !isMobile) return;
@@ -263,6 +190,10 @@ const SudoMode = () => {
     }
   };
 
+  const getUserMessageCount = () => {
+    return chatStorageService.getAllMessages().filter(msg => !msg.isFounder).length;
+  };
+
   if (!isActive) return null;
 
   return (
@@ -320,7 +251,12 @@ const SudoMode = () => {
                   <div className="flex items-center gap-2 p-3 bg-green-500/20 rounded-xl">
                     <User className="w-5 h-5 text-green-400" />
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-green-400">Aniketh</div>
+                      <button
+                        onClick={() => navigate('/chat-management')}
+                        className="text-sm font-bold text-green-400 hover:underline cursor-pointer"
+                      >
+                        Aniketh
+                      </button>
                       <div className="text-xs text-green-400/70">Founder & Admin</div>
                     </div>
                     <button
@@ -370,80 +306,24 @@ const SudoMode = () => {
               )}
             </div>
 
-            {/* Founder Chat Management - Only visible when logged in */}
+            {/* Chat Overview - Only visible when logged in */}
             {isLoggedIn && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
                   <MessageCircle className="w-5 h-5" />
-                  <span className="text-sm font-bold">Chat Management</span>
+                  <span className="text-sm font-bold">Chat Overview</span>
                   <span className="text-xs bg-purple-500/30 text-purple-400 px-2 py-1 rounded-full">
-                    {getUserMessages().length} msgs
+                    {getUserMessageCount()} msgs
                   </span>
                 </div>
                 
-                {/* Online Status Toggle */}
-                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-                  <div className={`w-3 h-3 rounded-full ${isFounderOnline ? 'bg-green-400' : 'bg-gray-400'} animate-pulse`}></div>
-                  <span className="text-sm flex-1">Status</span>
-                  <button
-                    onClick={() => setIsFounderOnline(!isFounderOnline)}
-                    className={`px-3 py-1 text-xs rounded-full transition-all ${
-                      isFounderOnline 
-                        ? 'bg-green-500/30 text-green-400' 
-                        : 'bg-gray-500/30 text-gray-400'
-                    }`}
-                  >
-                    {isFounderOnline ? 'Online' : 'Offline'}
-                  </button>
-                </div>
-
-                {/* Contact Details */}
-                {getContactDetails() && (
-                  <div className="p-3 bg-blue-500/20 rounded-xl">
-                    <div className="text-xs text-blue-400 font-bold mb-2 flex items-center gap-1">
-                      <Users className="w-3 h-3" />
-                      Latest Contact
-                    </div>
-                    <div className="text-xs space-y-1">
-                      <div><strong>Name:</strong> {getContactDetails()?.name}</div>
-                      <div><strong>Email:</strong> {getContactDetails()?.email}</div>
-                      {getContactDetails()?.phone && <div><strong>Phone:</strong> {getContactDetails()?.phone}</div>}
-                      {getContactDetails()?.company && <div><strong>Company:</strong> {getContactDetails()?.company}</div>}
-                    </div>
-                  </div>
-                )}
-
-                {/* Recent Messages */}
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {getUserMessages().slice(-3).map(message => (
-                    <div key={message.id} className="p-2 bg-white/5 rounded-lg">
-                      <div className="text-xs text-foreground/80 mb-1">{message.text}</div>
-                      <div className="text-xs text-foreground/50 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {message.timestamp.toLocaleString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Quick Reply */}
-                <div className="space-y-2">
-                  <textarea
-                    value={founderReply}
-                    onChange={(e) => setFounderReply(e.target.value)}
-                    placeholder="Reply to chat..."
-                    rows={2}
-                    className="w-full p-3 text-sm bg-white/10 border border-white/30 rounded-xl focus:border-white/50 transition-colors resize-none"
-                  />
-                  <button
-                    onClick={() => handleFounderReply()}
-                    disabled={!founderReply.trim()}
-                    className="w-full p-2 bg-purple-500/20 text-purple-400 rounded-xl hover:bg-purple-500/30 transition-all disabled:opacity-50 text-sm font-semibold flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    Send Reply
-                  </button>
-                </div>
+                <button
+                  onClick={() => navigate('/chat-management')}
+                  className="w-full p-3 bg-purple-500/20 text-purple-400 rounded-xl hover:bg-purple-500/30 transition-all hover:scale-105 text-sm font-semibold flex items-center justify-center gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  Open Chat Management
+                </button>
               </div>
             )}
 
